@@ -1,0 +1,498 @@
+/* standalone reset (the artifact host used to provide this) */
+html{-webkit-text-size-adjust:100%}
+[hidden]{display:none !important}
+
+/* PDMD -- one page: filmstrip hero, quote, gallery, benchmarks. */
+
+:root{
+  --page:#050505;
+  --ink:#F4F3F0;
+  --ink-2:#C7C5BF;
+  --muted:#85847F;
+  --faint:#3E3E3B;
+  --bone:#EDE9E1;
+  --bone-ink:#0A0A0A;
+  --bone-muted:#5C5A54;
+  --hair:rgba(255,255,255,.14);
+  --hair-soft:rgba(255,255,255,.075);
+  --fill:rgba(255,255,255,.05);
+  --fill-2:rgba(255,255,255,.09);
+  --signal:#FF6A2C;
+  --gut:clamp(16px,3.6vw,54px);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--page); color:var(--ink);
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+  font-size:17px; line-height:1.5; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+img,video{max-width:100%; display:block}
+a{color:inherit; text-decoration:none}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:1px solid var(--signal); outline-offset:3px}
+::selection{background:var(--signal); color:#050505}
+
+body::after{
+  content:""; position:fixed; inset:0; z-index:95; pointer-events:none; opacity:.03;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+}
+
+.wrap{padding-inline:var(--gut)}
+.hold{max-width:1440px; margin-inline:auto}
+h1,h2,h3{margin:0; font-weight:400; text-wrap:balance}
+p{margin:0}
+.cond{font-variation-settings:"wdth" 62,"wght" 600; letter-spacing:-.012em; line-height:.78; text-transform:uppercase}
+.label{font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.sub{color:var(--muted); font-size:16.5px; line-height:1.62; max-width:56ch}
+
+/* ---------------- floating top bar ---------------- */
+.topbar{
+  position:fixed; inset:0 0 auto 0; z-index:80; height:58px;
+  display:flex; align-items:center; gap:18px; padding-inline:var(--gut);
+  background:rgba(5,5,5,.78); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--hair-soft);
+  transform:translateY(-100%); transition:transform .32s cubic-bezier(.22,.7,.3,1);
+}
+.topbar.on{transform:none}
+.topbar .mark{font-size:14px; letter-spacing:.11em; font-weight:600; text-transform:uppercase; flex:none}
+.topbar .chip{
+  flex:none; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--signal);
+  border:1px solid var(--signal); border-radius:999px; padding:3px 9px;
+}
+.topbar .strap{
+  min-width:0; flex:1 1 auto; font-size:13.5px; color:var(--muted);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.topbar .strap b{color:var(--ink-2); font-weight:500}
+.topbar nav{margin-left:auto; display:flex; gap:2px; flex-wrap:nowrap; flex:none}
+@media (max-width:1150px){.topbar .strap{display:none}}
+@media (max-width:760px){.topbar .chip{display:none}}
+.topbar nav a{font-size:13.5px; color:var(--muted); padding:7px 12px; border-radius:999px; transition:color .2s,background .2s}
+.topbar nav a:hover{color:var(--ink); background:var(--fill-2)}
+
+/* ---------------- 1. filmstrip hero ---------------- */
+.hero{position:relative; min-height:min(92vh,880px); overflow:hidden;
+      display:flex; flex-direction:column; justify-content:center;
+      padding-block:clamp(64px,9vh,110px)}
+.hero .word{
+  position:relative; z-index:4; width:100%; text-align:center; white-space:nowrap;
+  pointer-events:none; user-select:none; color:var(--ink);
+  font-size:clamp(89px,22.82vw,398px);
+  margin-block:clamp(-18px,-1.6vw,-6px);
+}
+.reel{position:relative; z-index:2; transform:rotate(-3.4deg)}
+.filmstrip{
+  position:relative; background:#0B0B0C; padding-block:20px;
+  width:118%; margin-left:-9%; overflow:hidden;
+  box-shadow:0 30px 60px rgba(0,0,0,.6);
+}
+.filmstrip .holes{
+  position:absolute; left:0; right:0; height:8px; z-index:3; pointer-events:none;
+  background:repeating-linear-gradient(90deg, transparent 0 13px, rgba(244,243,240,.5) 13px 28px);
+}
+.filmstrip .holes.t{top:6px}
+.filmstrip .holes.b{bottom:6px}
+.strip{display:flex; width:max-content; animation:pan 78s linear infinite}
+.strip.rev{animation-direction:reverse; animation-duration:96s}
+.filmstrip:hover .strip{animation-play-state:paused}
+@keyframes pan{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+.frame{
+  position:relative; flex:none; width:clamp(192px,21.45vw,348px); aspect-ratio:16/9;
+  background:#000; border-inline:3px solid #0B0B0C; cursor:zoom-in; padding:0; margin:0;
+}
+.frame img,.frame video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.frame video{opacity:0; transition:opacity .45s ease}
+.frame.playing video{opacity:1}
+.frame::after{content:""; position:absolute; inset:0; box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.hero-foot{
+  position:relative; z-index:4; display:grid; justify-items:center; gap:14px;
+  text-align:center; margin-top:clamp(30px,6vh,68px);
+}
+.hero-foot .tag{
+  font-size:clamp(12.5px,1.35vw,18px); color:var(--ink-2); max-width:none; white-space:nowrap;
+}
+.hero-foot .tag b{color:var(--signal); font-weight:600}
+.hero-foot .cue{font-size:13px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted)}
+@media (max-width:700px){.hero-foot .tag{white-space:normal; max-width:36ch}}
+
+/* ---------------- 2. the quote block ---------------- */
+.band{padding-block:clamp(72px,11vw,168px)}
+.band--bone{background:var(--bone); color:var(--bone-ink)}
+.band--bone .sub,.band--bone .label{color:var(--bone-muted)}
+.tldr-label{
+  text-align:center; margin-bottom:clamp(26px,4vw,52px);
+  font-size:13px; letter-spacing:.24em; text-transform:uppercase; color:var(--signal);
+}
+.tldr-label::before,.tldr-label::after{
+  content:""; display:inline-block; width:clamp(28px,6vw,90px); height:1px;
+  background:rgba(10,10,10,.22); vertical-align:middle; margin:0 16px;
+}
+.quote{position:relative; padding-left:clamp(18px,3vw,46px); border-left:2px solid var(--signal); max-width:none}
+.quote .title{
+  font-size:clamp(28px,4.7vw,76px); line-height:1.0; letter-spacing:-.03em;
+  font-variation-settings:"wdth" 80,"wght" 500; max-width:16em;
+}
+.quote .title em{font-style:normal; color:var(--signal); font-variation-settings:"wdth" 70,"wght" 600}
+.quote .tldr{
+  margin-top:clamp(24px,3.2vw,44px); font-size:clamp(17px,1.95vw,26px); line-height:1.42;
+  letter-spacing:-.018em; max-width:30em;
+}
+.quote .tldr mark{
+  background:none; color:var(--signal); font-weight:600;
+  border-bottom:2px solid rgba(255,106,44,.38); padding-bottom:1px;
+}
+.quote .tldr .dim{color:var(--bone-muted)}
+.oneline{
+  margin-top:26px; display:inline-block; padding:12px 16px; background:rgba(10,10,10,.055);
+  border-left:2px solid var(--signal);
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-size:clamp(11.5px,1.25vw,15px);
+  white-space:pre; overflow-x:auto; max-width:100%;
+}
+.oneline b{color:var(--signal); font-weight:500; display:block}
+/* the comment sits on its own line: the two together overflow the column, and
+   an overflow-x:auto box just clips with nothing to say it scrolled */
+.oneline i{font-style:normal; color:#9A978F; display:block; margin-bottom:4px}
+.names{margin-top:clamp(38px,5.4vw,72px); font-size:clamp(16px,1.75vw,21px); line-height:1.75;
+       letter-spacing:-.008em; color:#2A2926; max-width:66ch}
+.names sup{color:var(--signal); font-size:.72em}
+/* centred under the author list, with the markers set as superscripts so they
+   match the ones in .names */
+.aff{margin-top:16px; color:var(--bone-muted); font-size:15px; display:flex; gap:22px;
+     flex-wrap:wrap; justify-content:center; text-align:center}
+.aff sup{color:var(--signal); font-size:.72em; margin-right:3px; vertical-align:super}
+.cta{display:flex; gap:10px; flex-wrap:wrap; margin-top:32px}
+.btn{display:inline-flex; align-items:center; gap:10px; height:52px; padding:0 19px; font-size:16px;
+     border:1px solid rgba(10,10,10,.22); transition:background .2s,border-color .2s}
+.btn svg{width:19px; height:19px; flex:none; fill:none; stroke:currentColor; stroke-width:1.7;
+         stroke-linecap:round; stroke-linejoin:round; opacity:.85}
+.btn:hover{background:rgba(10,10,10,.06)}
+.btn--solid{background:var(--bone-ink); color:var(--bone); border-color:var(--bone-ink)}
+.btn--solid:hover{background:#000}
+.btn .soon{font-size:12.5px; color:var(--bone-muted)}
+.btn--solid .soon{color:#8A867E}
+
+/* ---------------- 3. gallery ---------------- */
+.head{display:flex; gap:22px; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; margin-bottom:clamp(20px,3vw,40px)}
+.head--center{justify-content:center; text-align:center}
+h2{font-size:clamp(30px,5.6vw,72px); line-height:.92; font-variation-settings:"wdth" 70,"wght" 600; letter-spacing:-.01em; text-transform:uppercase}
+h3{font-size:clamp(17px,1.7vw,20px); line-height:1.25; font-weight:500}
+
+.film{display:grid; gap:4px; grid-template-columns:repeat(3,1fr)}
+.cell{position:relative; background:#000; overflow:hidden; cursor:zoom-in; border:0; padding:0; margin:0; display:block; width:100%}
+.cell video,.cell .ph{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.cell .ph{transition:opacity .7s ease}
+.cell.playing .ph{opacity:0}
+.cell .veil{position:absolute; inset:0; z-index:2; opacity:0; transition:opacity .3s ease; background:linear-gradient(180deg,rgba(0,0,0,0) 42%,rgba(0,0,0,.78) 100%)}
+.cell:hover .veil,.cell:focus-visible .veil{opacity:1}
+.cell .cap{position:absolute; left:16px; right:16px; bottom:13px; z-index:3; text-align:left; color:#fff; font-size:15px; opacity:0; transform:translateY(5px); transition:opacity .3s,transform .3s}
+.cell:hover .cap,.cell:focus-visible .cap{opacity:1; transform:none}
+.cell .cap em{display:block; font-style:normal; color:#A3A29D; font-size:12px; letter-spacing:.05em; text-transform:uppercase; margin-top:3px}
+.cell--wide{grid-column:span 2}
+
+/* ---------------- 4. benchmarks ---------------- */
+.switch{display:flex; border:1px solid var(--hair-soft)}
+.sw{appearance:none; border:0; border-right:1px solid var(--hair-soft); background:none; cursor:pointer;
+    color:var(--muted); font:inherit; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+    padding:12px 20px; transition:color .2s,background .2s}
+.sw:last-child{border-right:0}
+.sw:hover{color:var(--ink)}
+.sw[aria-selected="true"]{color:#050505; background:var(--ink)}
+
+.tw{overflow-x:auto; margin-top:clamp(20px,3vw,36px)}
+table{border-collapse:collapse; width:100%; min-width:620px; font-size:15px}
+th,td{padding:13px 16px; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; border-bottom:1px solid var(--hair-soft)}
+th:first-child,td:first-child{text-align:left; white-space:normal; padding-left:0}
+td:last-child,th:last-child{padding-right:0}
+thead th{color:var(--muted); font-weight:400; font-size:12.5px; letter-spacing:.05em; text-transform:uppercase; border-bottom-color:var(--hair)}
+tbody tr:last-child td{border-bottom:0}
+tr.base td{color:var(--faint)}
+tr.ours td{background:var(--fill); font-weight:600; color:#fff}
+/* a column PDMD does not lead: no emphasis, so bold never implies a win */
+tr.ours td.behind{font-weight:400; color:var(--ink-2)}
+tr.ours td.win{color:var(--signal)}
+td.best{color:var(--ink); font-weight:600}
+.tnote{margin-top:16px; color:var(--muted); font-size:14px; line-height:1.6; max-width:82ch}
+
+.cmp{margin-bottom:clamp(36px,5.5vw,72px)}
+.cmp-head{display:flex; gap:16px; align-items:baseline; justify-content:space-between; flex-wrap:wrap; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--hair-soft)}
+.cmp-head h3{font-variation-settings:"wdth" 72,"wght" 600; text-transform:uppercase; font-size:20px}
+.cmp-head .id{color:var(--muted); font-size:13px}
+.cmp-grid{display:grid; gap:4px}
+.cmp-item .shot{position:relative; background:#000; overflow:hidden; cursor:zoom-in}
+.cmp-item .shot video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.cmp-item.ours .shot{box-shadow:inset 0 0 0 2px var(--signal)}
+.cmp-item .nm{margin-top:7px; font-size:12.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted)}
+.cmp-item.ours .nm{color:var(--signal)}
+.cmp-item .nm b{font-weight:600}
+.cmp-item .nm i{font-style:normal; color:var(--faint); text-transform:none; letter-spacing:0; padding-left:6px}
+
+details.prompt{margin-bottom:14px; font-size:14px}
+details.prompt summary{cursor:pointer; color:var(--muted); list-style:none; padding:2px 0}
+details.prompt summary::-webkit-details-marker{display:none}
+/* A disclosure triangle instead of the +/- pair. The glyph is swapped rather
+   than rotated: Chrome does not reliably apply a transform to a ::before here
+   -- it reports the identity matrix with the rule loaded and [open] set. */
+details.prompt summary::before{content:"\25BE"; color:var(--signal); display:inline-block;
+                               width:12px; margin-right:6px}
+details.prompt[open] summary::before{content:"\25B4"}
+details.prompt .body{padding:10px 0 4px; color:var(--muted); line-height:1.7; max-width:92ch}
+
+/* ---------------- lightbox ---------------- */
+.lb{position:fixed; inset:0; z-index:100; background:rgba(3,3,3,.965); display:grid; place-items:center; padding:clamp(14px,3vw,40px)}
+.lb-in{width:min(1360px,100%); max-height:100%; overflow:auto; display:grid; gap:16px}
+.lb video{width:100%; background:#000}
+.lb-meta{color:var(--muted); font-size:14.5px; line-height:1.7; display:grid; gap:7px; max-width:96ch}
+.lb-meta h3{color:var(--ink)}
+.lb-close{position:fixed; top:16px; right:16px; z-index:101; appearance:none; border:1px solid var(--hair); background:rgba(5,5,5,.6); color:var(--ink); font:inherit; font-size:13px; letter-spacing:.06em; text-transform:uppercase; padding:9px 16px; cursor:pointer}
+
+footer{border-top:1px solid var(--hair-soft); padding-block:30px 44px; color:var(--muted); font-size:13.5px}
+.foot{display:flex; gap:22px; flex-wrap:wrap; justify-content:space-between}
+
+.reveal{opacity:1; transform:none; transition:opacity .7s ease, transform .7s cubic-bezier(.22,.7,.3,1)}
+.js .reveal.armed{opacity:0; transform:translateY(18px)}
+.js .reveal.armed.in{opacity:1; transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important; transition-duration:.01ms !important}
+  .strip{animation:none !important}
+  .js .reveal.armed{opacity:1; transform:none}
+  .cell .cap,.cell .veil{opacity:1; transform:none}
+}
+@media (max-width:860px){
+  .film{grid-template-columns:repeat(2,1fr)}
+  .hero .word{font-size:clamp(88px,30vw,300px)}
+}
+@media (max-width:560px){
+  .film{grid-template-columns:1fr}
+  .cell--wide{grid-column:auto}
+  .reel + .reel{display:none}
+}
+
+/* ---------------- 3. the film ---------------- */
+/* 80% of the column, centred -- the film is a 1280x720 master, so a narrower
+   box also means less upscaling on a wide display */
+.player{position:relative; background:#000; aspect-ratio:16/9; overflow:hidden; cursor:pointer;
+        width:80%; margin-inline:auto}
+@media (max-width:760px){.player{width:100%}}
+.player img.ph{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity .4s ease}
+.player video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.player.on img.ph,.player.on .play{opacity:0; pointer-events:none}
+.player .play{
+  position:absolute; inset:0; z-index:3; display:grid; place-items:center; transition:opacity .3s ease;
+  background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.45));
+}
+.player .play span{
+  width:clamp(64px,7vw,92px); height:clamp(64px,7vw,92px); border-radius:50%;
+  border:1px solid rgba(255,255,255,.7); background:rgba(5,5,5,.38); backdrop-filter:blur(4px);
+  display:grid; place-items:center; color:#fff; font-size:clamp(17px,1.9vw,23px); padding-left:5px;
+  transition:background .2s ease, transform .2s ease;
+}
+.player:hover .play span{background:rgba(5,5,5,.6); transform:scale(1.05)}
+.player .runtime{
+  position:absolute; left:18px; bottom:16px; z-index:4; font-size:12.5px; letter-spacing:.08em;
+  text-transform:uppercase; color:#fff; padding:6px 11px; background:rgba(5,5,5,.55);
+}
+.player.on .runtime{opacity:0}
+
+/* ---------------- 5. read more ---------------- */
+.rm-head{display:grid; gap:14px; margin-bottom:clamp(30px,5vw,64px)}
+.rm-head .sub{max-width:60ch}
+.sect{border-top:1px solid var(--hair-soft); padding-top:clamp(26px,3.6vw,46px); margin-top:clamp(40px,6vw,82px)}
+.sect:first-of-type{margin-top:0}
+.split{display:grid; grid-template-columns:minmax(150px,.7fr) 1.3fr; gap:0}
+.split > .l{padding:0 26px 0 0}
+.split > .r{padding:0 0 0 30px; border-left:1px solid var(--hair-soft); display:grid; gap:22px; align-content:start}
+@media (max-width:760px){
+  .split{grid-template-columns:1fr}
+  .split > .l{padding:0 0 16px}
+  .split > .r{padding:0; border-left:0}
+}
+.eq{
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  font-size:clamp(15px,2vw,26px); line-height:1.9; letter-spacing:-.01em;
+  padding-block:clamp(18px,2.4vw,28px); border-block:1px solid var(--hair-soft);
+  overflow-x:auto; white-space:nowrap;
+}
+.eq .dim{color:var(--faint)}
+.eq .hi{color:var(--signal)}
+.notes{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:clamp(22px,3vw,40px)}
+.note h3{margin-bottom:8px}
+.note p{color:var(--muted); font-size:15px; line-height:1.6}
+.note p b{color:var(--ink-2); font-weight:500}
+.spec{border-top:1px solid var(--hair-soft)}
+.spec div{display:flex; gap:18px; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--hair-soft); font-size:14.5px}
+.spec dt{color:var(--muted)}
+.spec dd{margin:0; text-align:right; color:var(--ink-2)}
+.specs{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:clamp(22px,3vw,40px)}
+.specs h3{margin-bottom:12px}
+
+/* ---------------- radar ---------------- */
+.radarwrap{display:grid; grid-template-columns:minmax(300px,1fr) minmax(220px,300px); gap:clamp(22px,3vw,44px); align-items:center}
+@media (max-width:760px){.radarwrap{grid-template-columns:1fr}}
+.radar{width:100%; height:auto; overflow:visible}
+.radar .ring{fill:none; stroke:var(--hair-soft)}
+.radar .spoke{stroke:var(--hair-soft)}
+.radar .axis{fill:var(--muted); font-size:12.5px; letter-spacing:.05em; text-transform:uppercase}
+.radar .rng{fill:var(--faint); font-size:10.5px}
+.legend{display:flex; flex-wrap:wrap; gap:8px 22px; align-items:center; justify-content:center}
+.legend div{display:flex; gap:8px; align-items:center; font-size:13.5px; color:var(--muted); white-space:nowrap}
+.legend i{width:16px; height:3px; flex:none; border-radius:2px}
+.legend b{color:var(--ink); font-weight:500}
+.legend .note{color:var(--faint); font-size:12.5px; padding-left:6px}
+
+/* ---------------- section 3 layout + light-ground radar ---------------- */
+.h2sub{
+  margin-top:14px; font-size:clamp(15px,1.8vw,22px); color:var(--muted);
+  letter-spacing:-.01em;
+}
+.tldr-grid{
+  display:grid; grid-template-columns:minmax(0,1.12fr) minmax(340px,1fr);
+  gap:clamp(28px,4.5vw,72px) clamp(28px,4vw,64px); align-items:start;
+}
+/* column 2 is a stack: Fig. 3 first, the radar directly under it */
+.tldr-grid > .quote{grid-column:1; grid-row:1 / span 2}
+/* drop the figure by one title line so its top sits with "Matching Distillation"
+   rather than with the first line; the offset tracks the title's own clamp */
+.tldr-grid > .fig3{grid-column:2; grid-row:1; margin-top:clamp(30px,5.4vw,88px)}
+.tldr-grid > .radarwrap{grid-column:2; grid-row:2}
+@media (max-width:980px){
+  .tldr-grid{grid-template-columns:1fr}
+  .tldr-grid > .quote,
+  .tldr-grid > .fig3,
+  .tldr-grid > .radarwrap{grid-column:1; grid-row:auto}
+  .tldr-grid > .fig3{margin-top:0}     /* single column: no title line to clear */
+}
+
+/* the radar sits on the bone ground here, so it gets its own ink */
+.band--bone .radarwrap{
+  --s1:#E4571B; --s2:#2A2926; --s3:#6E6B64; --s4:#A5A199;
+  --ringc:rgba(10,10,10,.16); --dotring:#EDE9E1;
+}
+.band--bone .radar .axis{fill:var(--bone-muted)}
+.band--bone .radar .rng{fill:#9A978F}
+.band--bone .legend div{color:var(--bone-muted)}
+.band--bone .legend b{color:var(--bone-ink)}
+.band--bone .legend .note{color:#9A978F}
+.band--bone .tnote{color:var(--bone-muted)}
+/* the radar sits under Fig. 3 in a single column: pull it up towards the
+   figure and centre the legend on the chart above it */
+.radarwrap{grid-template-columns:1fr; gap:10px; margin-top:-14px; justify-items:center}
+.radarwrap > div{width:100%}
+/* Two columns: lift the radar by three lines of the abstract beside it
+   (line-height 43.52px, so 131px). The boxes now overlap by ~24px, but the
+   chart's own viewBox carries ~46px of empty space above its first ink, so the
+   ink still clears the figure caption by ~22px and nothing is drawn over. */
+@media (min-width:981px){
+  .tldr-grid > .radarwrap{margin-top:-145px}
+}
+
+.btn--ghost{height:46px; font-size:15px; align-self:flex-start}
+
+/* official marks, used as published -- all three are drawn for light grounds,
+   so the primary button is light too and takes its emphasis from the accent */
+.btn img.brand{height:20px; width:auto; flex:none; display:block}
+.btn img.brand.brand--arxiv{height:15px}
+.btn--primary{border:2px solid var(--signal); font-weight:500}
+.btn--primary:hover{background:rgba(255,106,44,.08)}
+
+/* ---------------- Fig. 3 from the paper ---------------- */
+.fig3{margin:0 0 clamp(22px,2.6vw,34px)}
+.fig3 img{width:100%; height:auto; display:block}
+.fig3-row{display:grid; grid-template-columns:1.19fr 1fr;
+          gap:clamp(10px,1.1vw,16px); align-items:start}
+.fig3-diagram{background:#fff; border:1px solid rgba(10,10,10,.12)}
+.fig3-pair{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+@media (max-width:980px){.fig3-row{grid-template-columns:1fr; gap:12px}}
+.fig3-pair img{border:3px solid transparent}
+.fig3-pair span:first-child img{border-color:#D55E00}
+.fig3-pair span:last-child img{border-color:#009E73}
+.fig3-pair em{display:block; font-style:normal; font-size:11.5px; letter-spacing:.07em;
+              text-transform:uppercase; margin-top:6px}
+.fig3-pair span:first-child em{color:#D55E00}
+.fig3-pair span:last-child em{color:#009E73}
+.fig3 figcaption{margin-top:12px; font-size:12.5px; line-height:1.6; color:var(--bone-muted)}
+
+/* Chrome will not start unmuted video until the document has had a real
+   interaction, so the hint is shown only while that has not happened; site.js
+   drops .needs-gesture on the first pointerdown/keydown. */
+.hover-hint{display:none}
+.needs-gesture .hover-hint{display:inline; color:var(--signal)}
+
+/* the route into the side-by-side comparisons -- the one link out of this page */
+.btn--accent{color:var(--signal); border-color:var(--signal)}
+.btn--accent:hover{background:rgba(255,106,44,.09); border-color:var(--signal)}
+
+/* ---------------- comparison row transport ----------------
+   One play/pause, one scrubber and one resync per row; the row is the unit,
+   not the panel, because the point of the page is frame-for-frame comparison. */
+.cmp-ctl{display:flex; align-items:center; gap:12px; margin-top:10px; padding-top:10px;
+         border-top:1px solid var(--hair-soft)}
+.ctl-btn{display:inline-flex; align-items:center; justify-content:center; height:30px; padding:0 12px;
+         border:1px solid var(--hair); background:none; color:var(--muted); cursor:pointer;
+         font:inherit; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+         transition:color .15s, border-color .15s}
+.ctl-btn:hover{color:var(--ink); border-color:var(--ink)}
+.ctl-play{width:34px; padding:0}
+.ctl-play svg{width:11px; height:13px; fill:currentColor}
+.ctl-play .i-pause{display:none}
+.cmp.running .ctl-play{color:var(--signal); border-color:var(--signal)}
+.cmp.running .ctl-play .i-play{display:none}
+.cmp.running .ctl-play .i-pause{display:block}
+/* A 2px line in a 22px box is a hard thing to grab. The row is 30px tall and
+   the whole of it is the hit area; the rail thickens and the knob grows the
+   moment the pointer is anywhere near, so the target is the row, not the line. */
+.ctl-track{position:relative; flex:1 1 auto; height:30px; cursor:pointer; touch-action:none;
+           display:flex; align-items:center}
+.ctl-track::before{content:""; position:absolute; left:0; right:0; top:50%; height:4px;
+                   margin-top:-2px; border-radius:2px; background:var(--hair-soft);
+                   transition:height .12s, margin-top .12s}
+.ctl-fill{position:absolute; left:0; top:50%; height:4px; margin-top:-2px; width:0;
+          border-radius:2px; background:var(--signal); transition:height .12s, margin-top .12s}
+.ctl-fill::after{content:""; position:absolute; right:-6px; top:50%; width:12px; height:12px;
+                 margin-top:-6px; border-radius:50%; background:var(--signal);
+                 box-shadow:0 0 0 3px rgba(5,5,5,.75); transition:width .12s, height .12s, margin-top .12s}
+.ctl-track:hover::before,.ctl-track.dragging::before{height:6px; margin-top:-3px}
+.ctl-track:hover .ctl-fill,.ctl-track.dragging .ctl-fill{height:6px; margin-top:-3px}
+.ctl-track:hover .ctl-fill::after,.ctl-track.dragging .ctl-fill::after{width:16px; height:16px; margin-top:-8px; right:-8px}
+.ctl-track.dragging{cursor:grabbing}
+.ctl-track:focus-visible{outline:2px solid var(--signal); outline-offset:3px}
+.ctl-time{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-size:11.5px;
+          color:var(--faint); min-width:104px; text-align:right; font-variant-numeric:tabular-nums}
+.ctl-sync.flash{color:var(--signal); border-color:var(--signal)}
+@media (max-width:760px){
+  .ctl-time{display:none}
+  .cmp-ctl{gap:9px}
+}
+
+/* the re-run dagger, set as a footnote marker wherever a method name appears */
+.dag{font-size:.7em; vertical-align:super; line-height:0; margin-left:.5px}
+
+/* the two metric families over the columns they cover */
+.grp th{padding-bottom:6px; font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+        color:var(--faint); font-weight:500; border-bottom:0}
+.grp .grp-v,.grp .grp-a{text-align:center; position:relative}
+.grp .grp-v::after,.grp .grp-a::after{content:""; position:absolute; left:10px; right:10px; bottom:2px;
+                                      height:1px; background:var(--hair-soft)}
+.band--bone .grp th{color:#9A978F}
+
+
+.hero-foot{display:flex; flex-direction:column; align-items:center}
+
+/* Shown only while the browser is still blocking audio, and pulsing the whole
+   time it is shown: it is asking for the one click that turns sound on, so it
+   should be hard to miss. It removes itself the moment that click lands. */
+.sndhint{margin:10px auto 0; max-width:52ch; text-align:center; font-size:13px;
+         line-height:1.5; color:var(--ink); background:rgba(5,5,5,.72);
+         padding:9px 16px; border:1px solid var(--signal); border-radius:2px;
+         animation:sndflash 1.15s ease-in-out infinite}
+.sndhint b{color:var(--signal); font-weight:600}
+.sndhint[hidden]{display:none}
+@keyframes sndflash{
+  0%,100%{opacity:1;   border-color:var(--signal);        box-shadow:0 0 0 0 rgba(255,106,44,.5)}
+  50%    {opacity:.52; border-color:rgba(255,106,44,.35);  box-shadow:0 0 0 7px rgba(255,106,44,0)}
+}
+/* a blinking box is exactly what this setting exists to stop */
+@media (prefers-reduced-motion:reduce){
+  .sndhint{animation:none; opacity:1}
+}

@@ -1,0 +1,11 @@
+# regenerable
+film/node_modules/
+.cache/
+
+# heavy source media: the 1344x768 originals the film is cut from.
+# Rebuild with tools/build_assets.py, or copy them back from TOS.
+film/public/clips/
+
+# renders other than the one the site ships
+film/out/*.mp4
+!film/out/PDMD_Promo_v33_web.mp4

@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PDMD &#8212; Projected Distribution Matching Distillation</title>
+<meta name="description" content="PDMD: Projected Distribution Matching Distillation for Diffusion Models. Four-step distillation from a one-line change to the DMD update.">
+<meta property="og:title" content="PDMD &#8212; Projected Distribution Matching Distillation">
+<meta property="og:description" content="Delete one direction from the DMD update and four-step distillation stops collapsing.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="posters/film.jpg?v=64">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='12'%20fill='%23050505'/%3E%3Cpath%20d='M32%2014%20V44%20M18%2044%20H46'%20stroke='%23FF6A2C'%20stroke-width='6'%20stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css?v=64">
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <a class="mark" href="#top">PDMD</a>
+  <span class="chip">TL;DR</span>
+  <span class="strap"><b>A one-line change that projects the DMD update onto the subspace orthogonal to the
+    student&#8211;critic endpoint residual,</b> reducing training errors such as oversaturation and reduced
+    motion.</span>
+  <nav>
+    <a href="#film">Meet PDMD</a>
+    <a href="#tldr">TL;DR</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#bench" data-bench="h3">Benchmarks</a>
+  </nav>
+</div>
+
+<main id="view-main" class="view">
+
+<!-- ============ 1 ============ -->
+<header class="hero wrap" id="top">
+  <div class="reel"><div class="filmstrip">
+    <div class="holes t"></div><div class="holes b"></div>
+    <div class="strip" id="stripA"></div>
+  </div></div>
+  <div class="word cond" aria-hidden="true">PDMD</div>
+  <div class="reel"><div class="filmstrip">
+    <div class="holes t"></div><div class="holes b"></div>
+    <div class="strip rev" id="stripB"></div>
+  </div></div>
+  <div class="hero-foot">
+    <p class="tag"><b>Four-step</b> distillation for diffusion models. Every frame on this page is four network evaluations.</p>
+    <p class="sndhint" id="sndHint" hidden><b>Click anywhere</b> to turn on sound &#8212;
+      browsers block audio until a page has been clicked once.</p>
+    <p class="cue">Scroll</p>
+  </div>
+</header>
+
+<!-- ============ 2 -- meet PDMD ============ -->
+<section class="band" id="film" style="padding-bottom:clamp(40px,6vw,80px)">
+  <div class="wrap hold">
+    <div class="head head--center reveal">
+      <h2>Meet PDMD</h2>
+      <p class="h2sub">State-of-the-art step distillation</p>
+    </div>
+    <div class="player reveal" id="player">
+      <img class="ph" src="posters/film.jpg?v=64" alt="">
+      <div class="play"><span>&#9654;</span></div>
+      <div class="runtime">1:13 &#183; sound on</div>
+    </div>
+    <p class="tnote reveal">Music: &ldquo;Goliath&rdquo; by Scott Buckley, licensed
+      <a href="https://creativecommons.org/licenses/by/4.0/" style="color:var(--ink)">CC&nbsp;BY&nbsp;4.0</a>.</p>
+  </div>
+</section>
+
+<!-- ============ 3 -- TL;DR ============ -->
+<section class="band band--bone wrap" id="tldr">
+  <div class="hold">
+    <div class="tldr-label reveal">TL;DR</div>
+    <div class="tldr-grid">
+    <div class="quote reveal">
+      <h1 class="title"><em>Projected</em> Distribution<br>Matching Distillation<br>for Diffusion Models</h1>
+      <p class="tldr">We introduce PDMD, Projected Distribution Matching Distillation, a one-line
+        modification that projects the DMD update onto the subspace <mark>orthogonal to the student&#8211;critic
+        endpoint residual</mark>. <span class="dim">That residual is an unbiased estimate of the critic&#39;s own
+        error, so deleting it removes the part of the update the critic got wrong. Nothing else changes: no
+        auxiliary loss, no discriminator, no second network, no extra model evaluation.</span></p>
+      <div class="oneline"><i># r = x0_critic - x0_student</i><b>d = d - (d * r).sum() / r.pow(2).sum() * r</b></div>
+      <p class="names">
+        Zimo Wang<sup>1,2</sup>, Junkun Yuan<sup>2</sup>, Angtian Wang<sup>2</sup>, Haotian Yang<sup>2</sup>,
+        Canyu Zhang<sup>2</sup>, Siyuan Yuan<sup>2</sup>, Xingchang Huang<sup>2</sup>, Bo Liu<sup>2</sup>,
+        Yizhi Wang<sup>2</sup>, Yiding Yang<sup>2</sup>, Chongyang Ma<sup>2</sup>,
+        Gordon Guocheng Qian<sup>2,&#8224;</sup>
+      </p>
+      <p class="aff">
+        <span><sup>1</sup>UC San Diego</span><span><sup>2</sup>ByteDance</span><span><sup>&#8224;</sup>Project lead</span>
+      </p>
+      <div class="cta">
+        <a class="btn btn--primary" href="#" data-ph><img class="brand brand--arxiv" src="logos/arxiv.svg" alt="">Paper <span class="soon">arXiv soon</span></a>
+        <a class="btn" href="#" data-ph><img class="brand" src="logos/gh.svg" alt="">Code <span class="soon">GitHub soon</span></a>
+        <a class="btn" href="#" data-ph><img class="brand" src="logos/hf.svg" alt="">Weights <span class="soon">Hugging Face soon</span></a>
+      </div>
+    </div>
+      <figure class="fig3 reveal">
+        <div class="fig3-row">
+          <img class="fig3-diagram" src="fig3/intuition.png"
+               alt="The DMD update as a vector, and the PDMD update keeping only the component perpendicular to the residual.">
+          <div class="fig3-pair">
+            <span><img src="fig3/dmd.jpg" alt=""><em>DMD target</em></span>
+            <span><img src="fig3/pdmd.jpg" alt=""><em>PDMD target</em></span>
+          </div>
+        </div>
+        <figcaption>DMD moves the student endpoint along &#8722;d. PDMD keeps only the part of d perpendicular
+          to the residual r, because the expectation of r is the critic-error component. The two frames decode a
+          real update target during training &#8212; the DMD one carries the stronger artifacts.</figcaption>
+      </figure>
+    <div class="radarwrap reveal">
+      <svg class="radar" id="radar" viewBox="0 0 560 480" role="img"
+           aria-label="Seven dimensions on VideoGen-Eval: PDMD against three four-step baselines"></svg>
+      <div>
+        <div class="legend" id="radarLegend"></div>
+
+      </div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 -- gallery ============ -->
+<section class="band" id="gallery" style="padding-block:clamp(40px,6vw,80px)">
+  <div class="wrap hold">
+    <div class="head reveal">
+      <h2>Gallery</h2>
+      <p class="sub">MiniMax-H3-33B distilled with PDMD. 1344&#215;768, 345 frames at 24 fps, four network
+        evaluations each.
+        </p>
+    </div>
+  </div>
+  <div class="film" id="filmgrid"></div>
+</section>
+
+<!-- ============ 5 -- read more ============ -->
+<section class="band wrap" id="readmore">
+  <div class="hold">
+    <div class="rm-head reveal">
+      <h2>Read more</h2>
+    </div>
+
+    <!-- 5b -->
+    <div class="sect" id="bench">
+      <div class="split reveal">
+        <div class="l"><span class="label">Benchmark results</span></div>
+        <div class="r">
+          <div class="switch" role="tablist" id="benchSwitch">
+            <button class="sw" role="tab" data-b="h3" aria-selected="true">H3 &#183; VideoGen-Eval</button>
+            <button class="sw" role="tab" data-b="wan" aria-selected="false">Wan2.1 &#183; VBench</button>
+          </div>
+          <a class="btn btn--ghost btn--accent" href="#/compare/h3" style="margin-top:16px">Check qualitative
+            comparisons side by side &#8594;</a>
+        </div>
+      </div>
+
+      <div id="b-h3">
+        <div class="tw reveal">
+          <table>
+            <thead>
+              <tr class="grp">
+                <th colspan="2"></th>
+                <th colspan="4" class="grp-v">Video metrics</th>
+                <th colspan="4" class="grp-a">Audio metrics</th>
+              </tr>
+              <tr><th>Method</th><th>NFE</th><th>Total</th><th>Quality</th><th>Dynamic</th><th>Semantic</th><th>PQ</th><th>CE</th><th>CU</th><th>IS</th></tr>
+            </thead>
+            <tbody>
+              <tr class="base"><td>MiniMax-H3-33B, teacher</td><td>50</td><td>82.41</td><td>82.22</td><td>66.67</td><td>83.20</td><td>6.567</td><td>4.188</td><td>6.213</td><td>5.15</td></tr>
+              <tr><td>MiniMax-H3-33B</td><td>4</td><td>79.48</td><td>79.54</td><td>44.44</td><td>79.23</td><td>6.056</td><td>3.167</td><td>5.580</td><td>3.35</td></tr>
+              <tr><td>H3 Turbo LoRA</td><td>4</td><td>81.57</td><td>81.29</td><td>54.78</td><td>82.69</td><td>6.406</td><td>3.917</td><td>6.015</td><td>4.52</td></tr>
+              <tr><td>DMD2<sup class="dag">&#8224;</sup></td><td>4</td><td>82.27</td><td>82.51</td><td>59.95</td><td>81.34</td><td>6.305</td><td>3.434</td><td>5.871</td><td>4.06</td></tr>
+              <tr><td>DMD<sup class="dag">&#8224;</sup></td><td>4</td><td>82.76</td><td>82.68</td><td>61.76</td><td class="best">83.05</td><td>6.381</td><td>3.801</td><td>5.931</td><td>4.79</td></tr>
+              <tr><td>rCM<sup class="dag">&#8224;</sup></td><td>4</td><td>81.18</td><td>80.98</td><td>58.40</td><td>81.95</td><td>6.063</td><td>3.711</td><td>5.446</td><td>3.69</td></tr>
+              <tr><td>AnyFlow<sup class="dag">&#8224;</sup></td><td>4</td><td>81.97</td><td>81.82</td><td>64.60</td><td>82.60</td><td>6.092</td><td>3.544</td><td>5.591</td><td>4.35</td></tr>
+              <tr class="ours"><td>PDMD</td><td>4</td><td class="win">83.17</td><td class="win">83.25</td><td class="win">71.83</td><td class="behind">82.86</td><td class="win">6.530</td><td class="win">4.062</td><td class="win">6.180</td><td class="win">4.98</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tnote reveal">387 prompts at 544p in mixed aspect ratios, seed 42 for every method. &#8224; marks our
+          reimplementations, trained under the shared protocol; each reports its best checkpoint. Orange marks a column PDMD wins outright
+          against every other four-step row.</p>
+
+      </div>
+
+      <div id="b-wan" hidden>
+        <div class="tw reveal">
+          <table>
+            <thead><tr><th>Method</th><th>NFE</th><th>Total</th><th>Quality</th><th>Dynamic</th><th>Semantic</th></tr></thead>
+            <tbody>
+              <tr class="base"><td>Wan2.1-T2V-1.3B, teacher</td><td>50&#215;2</td><td>83.06</td><td>85.02</td><td>68.61</td><td>75.23</td></tr>
+              <tr><td>Wan2.1-T2V-1.3B</td><td>4&#215;2</td><td>68.54</td><td>73.60</td><td>18.61</td><td>48.30</td></tr>
+              <tr><td>rCM</td><td>4</td><td>83.13</td><td>85.14</td><td>78.06</td><td>75.10</td></tr>
+              <tr><td>AnyFlow</td><td>4</td><td>83.54</td><td>85.28</td><td>59.44</td><td class="best">76.57</td></tr>
+              <tr><td>DMD<sup class="dag">&#8224;</sup></td><td>4</td><td>82.70</td><td>85.06</td><td>86.39</td><td>73.24</td></tr>
+              <tr><td>DMD2<sup class="dag">&#8224;</sup></td><td>4</td><td>83.44</td><td>85.84</td><td>76.67</td><td>73.84</td></tr>
+              <tr class="ours"><td>PDMD</td><td>4</td><td class="win">83.73</td><td class="win">85.89</td><td class="win">89.72</td><td class="behind">75.09</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tnote reveal">944 AnyFlow-augmented VBench prompts at 480p, five seeds each.
+          &#8224; marks our reimplementations, trained under the shared protocol;
+          each reports its best checkpoint. Orange marks a
+          column PDMD wins outright against every other four-step row.
+          DMD<sup class="dag">&#8224;</sup> and PDMD differ only by the projection.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ subpage: every comparison ============ -->
+<main id="view-compare" class="view" hidden>
+  <section class="band wrap" style="padding-top:clamp(90px,11vw,150px)">
+    <div class="hold">
+      <div class="split reveal" style="border-top:0">
+        <div class="l"><a href="#/" class="label" style="color:var(--signal)">&#8592; Back</a></div>
+        <div class="r">
+          <h2>Qualitative Comparisons</h2>
+          <div class="switch" role="tablist" id="benchSwitch2">
+            <button class="sw" role="tab" data-b="h3" aria-selected="true">H3 &#183; VideoGen-Eval</button>
+            <button class="sw" role="tab" data-b="wan" aria-selected="false">Wan2.1 &#183; VBench</button>
+          </div>
+        </div>
+      </div>
+      <div id="c-h3" style="margin-top:clamp(30px,4vw,56px)">
+        <div id="galH3"></div>
+      </div>
+      <div id="c-wan" hidden style="margin-top:clamp(30px,4vw,56px)">
+        <div id="galWan"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="hold foot">
+    <div>PDMD &#183; Projected Distribution Matching Distillation &#183; ByteDance and UC San Diego</div>
+    <div>All clips generated at 4 NFE.</div>
+  </div>
+</footer>
+
+<script src="data.js?v=64"></script>
+<script src="site.js?v=64"></script>
+<script src="radar.js?v=64"></script>
+<script>
+(function () {
+  "use strict";
+  var UI = window.PDMDUI, D = window.PDMD;
+
+  /* clips held back everywhere on the main page */
+  var GALLERY_SKIP = {"79B": 1, "57B": 1, "2B": 1};
+  var SHOWN = D.showcase.filter(function (it) { return !GALLERY_SKIP[it.id]; });
+
+  /* ---- 1. filmstrip ---- */
+  /* The strip moves by CSS animation, not by scrolling, and IntersectionObserver
+     does not reliably fire for elements displaced only by a transform -- so these
+     do not wait to be observed. They are 480x270 proxies (~320 KB).
+
+     They also do not all start at once: thirty-two simultaneous requests exhaust
+     the per-host connection limit and every one of them stalls at readyState 0.
+     A small queue keeps a few loading at a time and starts the next as each
+     becomes playable. */
+  var QUEUE = [], INFLIGHT = 0, MAX_INFLIGHT = 4;
+  function pump() {
+    while (INFLIGHT < MAX_INFLIGHT && QUEUE.length) {
+      (function (v) {
+        INFLIGHT++;
+        var done = false;
+        function next() {
+          if (done) return;
+          done = true; INFLIGHT--;
+          pump();
+        }
+        v.addEventListener("canplay", next, {once: true});
+        v.addEventListener("error", next, {once: true});
+        setTimeout(next, 6000);            /* never let one stall file block the rest */
+        v.src = v.dataset.src;
+        var p = v.play(); if (p && p.catch) p.catch(function () {});
+      })(QUEUE.shift());
+    }
+  }
+
+  function frame(it) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "frame";
+    b.setAttribute("aria-label", "Open " + it.title);
+    var img = document.createElement("img");
+    img.src = it.thumb || it.poster; img.alt = ""; img.decoding = "async";
+    img.width = 420; img.height = 240;
+    var v = document.createElement("video");
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = "auto";
+    v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.setAttribute("loop", "");
+    v.dataset.src = it.proxy || it.src;
+    v.addEventListener("playing", function () { b.classList.add("playing"); });
+    v.addEventListener("error", function () { b.classList.remove("playing"); });
+    b.appendChild(img); b.appendChild(v);
+    /* The strip runs silent; the frame under the pointer is the one you hear.
+       Nothing is paused or restarted -- the marquee keeps moving and the clip
+       keeps its place, only its mute flag changes. */
+    b.addEventListener("pointerenter", function () {
+      if (!(UI.isArmed && UI.isArmed())) return;
+      UI.soloAudio(v);
+    });
+    b.addEventListener("pointerleave", function () { UI.soloAudio(null); });
+    b.addEventListener("click", function () {
+      UI.openLightbox({title: it.title, sub: "MiniMax-H3-33B distilled with PDMD, 4 NFE -- " + it.kind,
+                       prompt: it.prompt, src: it.src});
+    });
+    QUEUE.push(v);
+    return b;
+  }
+  function strip(host, items) {
+    for (var pass = 0; pass < 2; pass++) {
+      items.forEach(function (it) { host.appendChild(frame(it)); });
+    }
+  }
+  /* The hero strip draws from the same list as the gallery, so a clip removed
+     from one is removed from both -- it used to slice the unfiltered showcase
+     and kept showing clips the gallery no longer had. */
+  strip(document.getElementById("stripA"), SHOWN.slice(0, 8));
+  strip(document.getElementById("stripB"), SHOWN.slice(8, 16));
+  pump();
+
+  /* ---- 3. the film ---- */
+  var player = document.getElementById("player");
+  player.addEventListener("click", function () {
+    if (player.classList.contains("on")) return;
+    var v = document.createElement("video");
+    v.src = "film.mp4?v=64"; v.controls = true; v.autoplay = true; v.playsInline = true; v.preload = "auto";
+    player.appendChild(v);
+    player.classList.add("on");
+    v.play().catch(function () {});
+  });
+
+  /* ---- the sound hint ----
+     No switch: sound is attempted on every hover and any click anywhere in the
+     document arms it permanently. The line below only exists to explain the gap
+     before that first click, because the browser gives no feedback of its own. */
+  (function () {
+    var hint = document.getElementById("sndHint");
+    if (!hint) return;
+    function paint() {
+      hint.hidden = !document.documentElement.classList.contains("needs-gesture");
+    }
+    new MutationObserver(paint).observe(document.documentElement,
+      { attributes: true, attributeFilter: ["class"] });
+    paint();
+  })();
+
+  /* ---- space toggles whatever is playing ----
+     Native controls already take space, but only while the <video> itself has
+     focus; anywhere else on the page space scrolls instead. This routes it to
+     the thing the reader is actually looking at. */
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== " " && e.code !== "Space") return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    if (!t) return;
+    if (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable) return;
+    /* space activates a focused control -- never take it away from one */
+    if (t.closest && t.closest("button, a, summary, [role=slider], [role=tab]")) return;
+    /* A <video controls> handles space itself, and that handler is not always
+       cancelable -- doing it here too toggled twice, which read as "it paused
+       for a moment and started again". Leave the focused player alone. */
+    if (t.tagName === "VIDEO" || (t.closest && t.closest("video"))) return;
+
+    /* the lightbox is modal, so it wins; then whichever comparison row is under
+       the pointer; then the film */
+    var lbv = document.querySelector(".lb video");
+    if (lbv) { e.preventDefault(); toggle(lbv); return; }
+
+    var row = document.querySelector(".cmp:hover");
+    if (row) {
+      var btn = row.querySelector(".ctl-play");
+      if (btn) { e.preventDefault(); btn.click(); return; }
+    }
+
+    var fv = player.querySelector("video");
+    if (fv) { e.preventDefault(); toggle(fv); }
+
+    function toggle(v) {
+      if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      else { v.pause(); }
+    }
+  });
+
+  /* ---- 4. gallery ---- */
+  var grid = document.getElementById("filmgrid");
+  SHOWN.forEach(function (it, i) { grid.appendChild(UI.cell(it, i % 5 === 0 ? "wide" : "")); });
+
+  /* ---- 5. comparison grids (their own page) ----
+     A row only fetches metadata once it is near the viewport -- that paints a
+     first frame without starting playback. Hovering a panel plays it. */
+  /* The comparison page holds 392 <video> elements and every one of them is on
+     the same host. Priming them all leaves that many HTTP/2 streams open, and
+     once TOS stops granting streams it refuses the *document* request too --
+     ERR_HTTP2_SERVER_REFUSED_STREAM on the next load. So at most MAX_LOADING
+     metadata fetches are in flight, and a row that scrolls clear of the
+     viewport hands its sources back. */
+  var LOAD_Q = [], LOADING = 0, MAX_LOADING = 6;
+  function pumpLoad() {
+    while (LOADING < MAX_LOADING && LOAD_Q.length) {
+      var shot = LOAD_Q.shift();
+      if (!shot.isConnected || !shot.queued) continue;
+      (function (sh) {
+        LOADING++;
+        var done = false;
+        function next() { if (done) return; done = true; LOADING--; pumpLoad(); }
+        var v = sh.prime();
+        if (!v) return next();
+        v.addEventListener("loadeddata", next, { once: true });
+        v.addEventListener("error", next, { once: true });
+        setTimeout(next, 8000);          /* a stalled fetch must not block the queue */
+      })(shot);
+    }
+  }
+  var rowIO = ("IntersectionObserver" in window) ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      var shots = e.target.querySelectorAll(".shot");
+      if (e.isIntersecting) {
+        shots.forEach(function (sh) {
+          if (!sh.queued) { sh.queued = true; LOAD_Q.push(sh); }
+        });
+        pumpLoad();
+      } else {
+        shots.forEach(function (sh) { if (sh.release) sh.release(); });
+      }
+    });
+  }, { rootMargin: "300px 0px" }) : null;
+
+  function shotEl(it, row, onmeta) {
+    var shot = document.createElement("div");
+    shot.className = "shot";
+    shot.style.aspectRatio = row.w + " / " + row.h;
+    shot.tabIndex = 0;
+    shot.style.cursor = "zoom-in";
+    var v = null;
+    shot.prime = function () {
+      if (v) return v;
+      v = document.createElement("video");
+      v.muted = true; v.loop = true; v.playsInline = true; v.preload = "metadata";
+      v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.setAttribute("loop", "");
+      v.src = it.src;
+      if (onmeta) v.addEventListener("loadedmetadata", onmeta);
+      shot.appendChild(v);
+      return v;
+    };
+    /* drop the element entirely: removeAttribute + load() is what actually
+       closes the connection; clearing .src alone leaves the stream open */
+    shot.current = function () { return v; };     /* never creates */
+    shot.release = function () {
+      if (!v) return;
+      try { v.pause(); v.removeAttribute("src"); v.load(); } catch (e) {}
+      v.remove();
+      v = null;
+      shot.queued = false;
+    };
+    /* No per-panel play/pause here -- moving across a row would fire
+       pointerleave on the panel being left and stall that clip while its
+       neighbours ran on, which is the drift the transport exists to prevent.
+       Audio is different: unmuting changes no clock, so the panel under the
+       pointer is the one you hear and the rest stay silent. */
+    shot.addEventListener("pointerenter", function () {
+      var el = shot.current(); if (!el) return;
+      if (!(UI.isArmed && UI.isArmed())) return;   /* before any click: still muted */
+      el.volume = 1; el.muted = false; el.removeAttribute("muted");
+    });
+    shot.addEventListener("pointerleave", function () {
+      var el = shot.current(); if (!el) return;
+      el.muted = true; el.setAttribute("muted", "");
+    });
+    shot.addEventListener("click", function () {
+      UI.openLightbox({ title: it.name + " \u2014 prompt " + row.id,
+                        sub: it.note || "",          /* never the run id: internal */
+                        prompt: row.prompt, src: it.src });
+    });
+    return shot;
+  }
+
+  /* ---- one transport per comparison row ----
+     Eight <video> elements started by eight separate play() calls drift apart
+     within seconds -- different decode start times, different buffer states.
+     So one running clip is treated as the clock and the rest are pulled back to
+     it twice a second, and "Resync" does that pull on demand. Scrubbing seeks
+     every clip in the row to the same time. */
+  function rowTransport(sec, shots) {
+    var bar = document.createElement("div");
+    bar.className = "cmp-ctl";
+    bar.innerHTML =
+      '<button class="ctl-btn ctl-play" type="button" aria-label="Play this row">' +
+        '<svg class="i-play" viewBox="0 0 12 14" aria-hidden="true"><polygon points="1,1 11,7 1,13"/></svg>' +
+        '<svg class="i-pause" viewBox="0 0 12 14" aria-hidden="true">' +
+          '<rect x="1.4" y="1" width="3.4" height="12"/><rect x="7.2" y="1" width="3.4" height="12"/></svg>' +
+      '</button>' +
+      '<div class="ctl-track" role="slider" tabindex="0" aria-label="Position in this row" ' +
+        'aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><div class="ctl-fill"></div></div>' +
+      '<span class="ctl-time">0.0 / 0.0s</span>' +
+      '<button class="ctl-btn ctl-sync" type="button" ' +
+        'title="Pull every clip in this row back onto the same frame">Resync</button>';
+    sec.appendChild(bar);
+
+    var playBtn = bar.querySelector(".ctl-play"),
+        track   = bar.querySelector(".ctl-track"),
+        fill    = bar.querySelector(".ctl-fill"),
+        timeEl  = bar.querySelector(".ctl-time"),
+        syncBtn = bar.querySelector(".ctl-sync");
+
+    var pinned = null;             /* null: follow the pointer. true/false: a button decided. */
+    var scrubbing = false, raf = 0, lastFix = 0;
+
+    function vids() {                /* creates elements -- only on real interaction */
+      var out = [];
+      shots.forEach(function (s) { var v = s.prime(); if (v) out.push(v); });
+      return out;
+    }
+    /* Reading the transport must never create a <video>. paint() runs from
+       every loadedmetadata, so using vids() here meant one queued clip primed
+       the other seven in its row immediately, straight past the load limiter
+       -- which is how 392 streams got opened despite the queue. */
+    function live() {
+      var out = [];
+      shots.forEach(function (s) { var v = s.current(); if (v) out.push(v); });
+      return out;
+    }
+    function dur(vs) {
+      var d = 0;
+      vs.forEach(function (v) { if (isFinite(v.duration) && v.duration > d) d = v.duration; });
+      return d;
+    }
+    function clock(vs) {           /* whichever clip is actually running */
+      for (var i = 0; i < vs.length; i++) if (!vs[i].paused && vs[i].readyState > 1) return vs[i];
+      return vs[0] || null;
+    }
+    function paint() {
+      var vs = live(), c = clock(vs), d = dur(vs), t = c ? c.currentTime : 0;
+      fill.style.width = (d > 0 ? Math.min(100, (t / d) * 100) : 0).toFixed(2) + "%";
+      timeEl.textContent = t.toFixed(1) + " / " + d.toFixed(1) + "s";
+      track.setAttribute("aria-valuemax", d.toFixed(1));
+      track.setAttribute("aria-valuenow", t.toFixed(1));
+    }
+    sec.paintBar = paint;
+    function resync() {
+      var vs = live(), c = clock(vs);
+      if (!c) return;
+      var t = c.currentTime;
+      vs.forEach(function (v) {
+        if (v !== c && Math.abs(v.currentTime - t) > 0.03) { try { v.currentTime = t; } catch (e) {} }
+      });
+    }
+    function seekTo(t) {
+      var vs = live();            /* hovering the row has already primed it */
+      vs.forEach(function (v) {
+        try { v.currentTime = Math.max(0, Math.min(t, (v.duration || t))); } catch (e) {}
+      });
+      paint();
+    }
+    function loop(ts) {
+      paint();
+      if (ts - lastFix > 500) { lastFix = ts; resync(); }
+      raf = requestAnimationFrame(loop);
+    }
+    function playAll() {
+      vids().forEach(function (v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); });
+      sec.classList.add("running");
+      playBtn.setAttribute("aria-label", "Pause this row");
+      if (!raf) { lastFix = 0; raf = requestAnimationFrame(loop); }
+    }
+    function pauseAll() {
+      live().forEach(function (v) { try { v.pause(); } catch (e) {} });
+      sec.classList.remove("running");
+      playBtn.setAttribute("aria-label", "Play this row");
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      paint();
+    }
+
+    sec.addEventListener("pointerenter", function () {
+      if (scrubbing) return;
+      if (pinned === null) playAll(); else paint();
+    });
+    sec.addEventListener("pointerleave", function () {
+      /* setPointerCapture on the rail fires pointerleave on the row; pausing
+         then would kill the drag halfway through */
+      if (scrubbing) return;
+      if (pinned === null) pauseAll();
+    });
+
+    playBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (sec.classList.contains("running")) { pinned = false; pauseAll(); }
+      else { pinned = true; playAll(); }
+    });
+    syncBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      resync(); paint();
+      syncBtn.classList.add("flash");
+      setTimeout(function () { syncBtn.classList.remove("flash"); }, 380);
+    });
+
+    function fracAt(e) {
+      var b = track.getBoundingClientRect();
+      return b.width ? Math.max(0, Math.min(1, (e.clientX - b.left) / b.width)) : 0;
+    }
+    function scrub(e) {
+      var d = dur(live());
+      if (d > 0) seekTo(fracAt(e) * d);
+    }
+    var wasRunning = false;
+    track.addEventListener("pointerdown", function (e) {
+      e.preventDefault(); e.stopPropagation();
+      scrubbing = true;
+      wasRunning = sec.classList.contains("running");
+      track.classList.add("dragging");
+      /* seek on a paused video lands on the frame you asked for; seeking while
+         it plays fights the decoder and the thumb stutters */
+      if (wasRunning) live().forEach(function (v) { try { v.pause(); } catch (err) {} });
+      try { track.setPointerCapture(e.pointerId); } catch (err) {}
+      scrub(e);
+    });
+    track.addEventListener("pointermove", function (e) { if (scrubbing) scrub(e); });
+    function endScrub(e) {
+      if (!scrubbing) return;
+      scrubbing = false;
+      track.classList.remove("dragging");
+      try { track.releasePointerCapture(e.pointerId); } catch (err) {}
+      resync();
+      if (wasRunning) playAll();
+      else paint();
+    }
+    track.addEventListener("pointerup", endScrub);
+    track.addEventListener("pointercancel", endScrub);
+    track.addEventListener("keydown", function (e) {
+      var vs = live(), d = dur(vs), c = clock(vs);
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); playBtn.click(); return; }
+      if (!d || !c) return;
+      var step = e.shiftKey ? 1 : 0.2;
+      if (e.key === "ArrowRight") { e.preventDefault(); seekTo(c.currentTime + step); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); seekTo(c.currentTime - step); }
+      else if (e.key === "Home") { e.preventDefault(); seekTo(0); }
+    });
+  }
+
+  function buildCompare(host, rows) {
+    /* No "Main paper" / "Supplement" dividers, and the rows run in prompt-id
+       order rather than main-paper-first. Sorted here rather than in data.js
+       so regenerating the data cannot quietly restore the old order. */
+    rows.slice().sort(function (a, b) { return Number(a.id) - Number(b.id); }).forEach(function (row) {
+      var sec = document.createElement("div"); sec.className = "cmp";
+      var head = document.createElement("div"); head.className = "cmp-head";
+      var h3 = document.createElement("h3"); h3.textContent = "Prompt " + row.id;
+      var sp = document.createElement("span"); sp.className = "id";
+      sp.textContent = row.w + "\u00d7" + row.h + (row.short ? "  \u00b7  " + row.short : "");
+      head.appendChild(h3); head.appendChild(sp); sec.appendChild(head);
+      /* `short` is a one-line summary, shown inline beside the dimensions;
+         `prompt` is what the model was actually fed -- VideoGen-Eval through
+         H3 PE, VBench through the AnyFlow augmentation -- and stays a click
+         away behind "Show full prompt". */
+      if (row.prompt) {
+        var det = document.createElement("details"); det.className = "prompt";
+        det.innerHTML = "<summary>Show full prompt</summary><div class=\"body\"></div>";
+        det.querySelector(".body").textContent = row.prompt;
+        sec.appendChild(det);
+      }
+      var grid = document.createElement("div"); grid.className = "cmp-grid";
+      /* every model on one line, however many there are -- minmax(0,...) so a
+         long column cannot push the row wider than its container */
+      grid.style.gridTemplateColumns = "repeat(" + row.items.length + ",minmax(0,1fr))";
+      var shots = [];
+      row.items.forEach(function (it) {
+        var el = document.createElement("div"); el.className = "cmp-item" + (it.ours ? " ours" : "");
+        var nm = document.createElement("div"); nm.className = "nm";
+        nm.innerHTML = "<b></b><i></i>";
+        nm.querySelector("b").innerHTML = UI.dagHTML(it.name);
+        nm.querySelector("i").textContent = it.note || "";
+        var sh = shotEl(it, row, function () { if (sec.paintBar) sec.paintBar(); });
+        shots.push(sh);
+        el.appendChild(sh); el.appendChild(nm);
+        grid.appendChild(el);
+      });
+      sec.appendChild(grid);
+      rowTransport(sec, shots);
+      host.appendChild(sec);
+      if (rowIO) rowIO.observe(sec);
+    });
+  }
+  /* Built on first visit to their own route, not up front: the two grids hold
+     392 <video> elements between them, and only one is ever on screen. */
+  var COMPARE_BUILT = {};
+  function buildCompareOnce(which) {
+    if (COMPARE_BUILT[which]) return;
+    COMPARE_BUILT[which] = true;
+    if (which === "h3") buildCompare(document.getElementById("galH3"), D.compare);
+    else buildCompare(document.getElementById("galWan"), D.wan);
+  }
+
+  window.PDMDRadar(document.getElementById("radar"), document.getElementById("radarLegend"));
+
+  /* the tables on the main page, and the grids on the subpage, switch together */
+  function onCompare() { return (location.hash || "").indexOf("#/compare") === 0; }
+  function showBench(which, fromRoute) {
+    ["benchSwitch", "benchSwitch2"].forEach(function (id) {
+      var host = document.getElementById(id); if (!host) return;
+      host.querySelectorAll(".sw").forEach(function (b) {
+        b.setAttribute("aria-selected", b.dataset.b === which ? "true" : "false");
+      });
+    });
+    ["b-", "c-"].forEach(function (pre) {
+      ["h3", "wan"].forEach(function (k) {
+        var n = document.getElementById(pre + k); if (n) n.hidden = (k !== which);
+      });
+    });
+    var link = document.querySelector('a[href^="#/compare"]');
+    if (link) link.setAttribute("href", "#/compare/" + which);
+    if (onCompare()) {
+      buildCompareOnce(which);
+      /* keep the address bar honest; route() re-enters with fromRoute set */
+      if (!fromRoute) { location.hash = "#/compare/" + which; return; }
+    }
+    UI.arm();
+  }
+  ["benchSwitch", "benchSwitch2"].forEach(function (id) {
+    var host = document.getElementById(id); if (!host) return;
+    host.addEventListener("click", function (e) {
+      var b = e.target.closest(".sw"); if (b) showBench(b.dataset.b);
+    });
+  });
+  document.querySelectorAll("[data-bench]").forEach(function (a) {
+    a.addEventListener("click", function () { showBench(a.dataset.bench); });
+  });
+
+  /* ---- routing: the comparison grids live on their own page ---- */
+  function route() {
+    var m = (location.hash || "").match(/^#\/compare(?:\/(h3|wan))?/);
+    if (m && !m[1]) {                 /* bare #/compare: send it to a real route */
+      location.replace(location.pathname + location.search + "#/compare/h3");
+      return;
+    }
+    var compare = !!m;
+    document.getElementById("view-main").hidden = compare;
+    document.getElementById("view-compare").hidden = !compare;
+    if (compare) { showBench(m[1], true); window.scrollTo(0, 0); }
+    UI.arm();
+  }
+  window.addEventListener("hashchange", route);
+  route();
+
+  var bar = document.getElementById("topbar");
+  function onScroll() { bar.classList.toggle("on", window.scrollY > window.innerHeight * 0.72); }
+  window.addEventListener("scroll", onScroll, {passive: true});
+  onScroll();
+  document.querySelectorAll("[data-ph]").forEach(function (a) {
+    a.addEventListener("click", function (e) { e.preventDefault(); });
+  });
+  UI.arm();
+})();
+</script>
+
+</body>
+</html>
