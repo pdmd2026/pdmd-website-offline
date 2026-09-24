@@ -1,0 +1,69 @@
+<!-- Removed from index.html on 2026-09-19 at Gordon's request:
+     the Read more subtitle and the whole #tech block (5a).
+     Kept here because this folder is not under version control. -->
+      <p class="sub">The projection itself, then every number behind it.</p>
+    <!-- 5a -->
+    <div class="sect" id="tech">
+      <div class="split reveal">
+        <div class="l"><span class="label">Technical details</span></div>
+        <div class="r">
+          <p class="sub" style="max-width:62ch">DMD pushes the student endpoint along the negative of the
+            teacher&#8211;critic difference. The critic is online: it chases a student that moves at every step,
+            never tracks it exactly, and its estimation error rides into the student and compounds.</p>
+          <div class="eq">d &#160;=&#160; s<sub>critic</sub> &#8722; s<sub>teacher</sub>
+            &#160;&#160;&#160;&#160; <span class="hi">d<sub>&#8869;</sub></span> &#160;=&#160; d &#8722;
+            <span class="dim">(&#10216;d, r&#10217; / &#8214;r&#8214;&#178;)&#183;r</span></div>
+          <div class="notes">
+            <div class="note">
+              <h3>Why that direction</h3>
+              <p>At a fixed noisy query, <b>r = x<sub>0</sub><sup>c</sup> &#8722; x<sub>0</sub><sup>s</sup> is an
+                unbiased estimate of the critic&#39;s endpoint error</b>. The part of the update along r is
+                exactly the contaminated part.</p>
+            </div>
+            <div class="note">
+              <h3>Why the signal survives</h3>
+              <p>In high dimension the matching signal and one residual direction are close to orthogonal, so
+                deleting one direction costs almost nothing. The step still descends:
+                <b>&#10216;d<sub>&#8869;</sub>, d&#10217; = &#8214;d<sub>&#8869;</sub>&#8214;&#178; &#8805; 0</b>.</p>
+            </div>
+            <div class="note">
+              <h3>What it costs</h3>
+              <p>An inner product and a subtraction on tensors already in memory. <b>No auxiliary loss, no
+                discriminator, no extra evaluation, no second stage.</b></p>
+            </div>
+          </div>
+          <div class="specs" style="margin-top:8px">
+            <div>
+              <h3>MiniMax-H3-33B</h3>
+              <dl class="spec">
+                <div><dt>Student and critic</dt><dd>LoRA r = &#945; = 128</dd></div>
+                <div><dt>Placement</dt><dd>attn proj + both FFNs, all blocks</dd></div>
+                <div><dt>Optimizer</dt><dd>fused AdamW, &#946; 0.0 / 0.9</dd></div>
+                <div><dt>Learning rate</dt><dd>5e&#8722;5 student, 1e&#8722;5 critic</dd></div>
+                <div><dt>Critic updates</dt><dd>5 per student update</dd></div>
+                <div><dt>Steps</dt><dd>3 500</dd></div>
+                <div><dt>Hardware</dt><dd>2 &#215; 8 GPUs, batch 1 per GPU</dd></div>
+              </dl>
+            </div>
+            <div>
+              <h3>Wan2.1-T2V-1.3B</h3>
+              <dl class="spec">
+                <div><dt>Baseline</dt><dd>DMD&#8224; = DMD2 without the GAN term</dd></div>
+                <div><dt>Change for PDMD</dt><dd>the projection, nothing else</dd></div>
+                <div><dt>Schedule</dt><dd>as published for AnyFlow</dd></div>
+                <div><dt>Evaluation</dt><dd>944 prompts, 480p, 5 seeds</dd></div>
+              </dl>
+            </div>
+            <div>
+              <h3>ImageNet-64&#215;64</h3>
+              <dl class="spec">
+                <div><dt>PDMD</dt><dd>1.39 FID, one step</dd></div>
+                <div><dt>DMD2</dt><dd>1.51 FID</dd></div>
+                <div><dt>DMD</dt><dd>2.62 FID</dd></div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+

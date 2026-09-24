@@ -1,0 +1,19 @@
+The 39 clips the gallery shows, as Gordon picked them on the citai_t2v viewer.
+
+Source: .../results/citai_t2v/site/citai-t2v.html?only=1&pick=<list>
+
+The letters are the page's OWN column labels (its `col_token` map), NOT the
+positional order of `columns`. Decoding them positionally puts 19 of the 39 on
+clips that do not exist. The map is:
+
+  A -> NFE4_zwang000_s3500_seed42
+  B -> NFE4_zwang000_s3500_seed0
+  C -> NFE4_zwang000_s3500_seed370288456
+  D -> NFE4_zwang000_s3500_seed482437341
+  E -> NFE4_zwang000_s3500_seed1673268790
+
+Sanity check: 65E resolves to seed 1673268790, which is the take Fig. 1 of the
+paper uses for the knockdown. That is how the mapping was confirmed.
+
+pick=10A,12B,13B,14A,16B,17A,1B,20A,21A,24A,2B,32A,33A,3B,40A,42B,44A,4A,51A,
+     52A,53B,55B,57B,58B,59A,5A,60B,61A,65E,66A,68B,69B,6B,70A,71B,75A,79B,80B,83B
