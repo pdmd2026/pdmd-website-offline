@@ -12,14 +12,14 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='12'%20fill='%23050505'/%3E%3Cpath%20d='M32%2014%20V44%20M18%2044%20H46'%20stroke='%23FF6A2C'%20stroke-width='6'%20stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="site.css?v=70">
+<link rel="stylesheet" href="site.css?v=71">
 </head>
 <body>
 
 <div class="topbar" id="topbar">
   <a class="mark" href="#top">PDMD</a>
   <span class="chip">TL;DR</span>
-  <span class="strap"><b>PDMD suppresses the student&#8217;s training error by projecting out a ready-made error estimate.</b></span>
+  <span class="strap"><b>PDMD improves the diffusion distillation with a one-line projection that filters student's training error.</b></span>
   <nav>
     <a href="#film">Meet PDMD</a>
     <a href="#tldr">TL;DR</a>
@@ -75,8 +75,7 @@
     <div class="tldr-grid">
     <div class="quote reveal">
       <h1 class="title"><em>Projected</em> Distribution<br>Matching Distillation</h1>
-      <p class="tldr">PDMD suppresses the student&#8217;s training error by <mark>projecting out a ready-made
-        error estimate</mark>. <span class="dim">Nothing else changes: no
+      <p class="tldr">PDMD improves the diffusion distillation with a <mark>one-line projection that filters student's training error</mark>. <span class="dim">Nothing else changes: no
         auxiliary loss, no additional network, no extra model pass.</span></p>
       <div class="oneline"><i># r = x0_critic - x0_student</i><b>d = d - (d * r).sum() / r.pow(2).sum() * r</b></div>
       <p class="names">
@@ -103,9 +102,9 @@
             <span><img src="fig3/pdmd.jpg" alt=""><em>PDMD target</em></span>
           </div>
         </div>
-        <figcaption>DMD moves the student endpoint along &#8722;d. PDMD keeps only the part of d perpendicular
-          to the residual r, because the expectation of r is the critic-error component. The two frames decode a
-          real update target during training &#8212; the DMD one carries the stronger artifacts.</figcaption>
+        <figcaption>DMD moves the student endpoint along &#8722;d. PDMD projects out the component of d parallel
+          to the student&#8211;critic endpoint residual r, an estimate of critic error, to suppress critic error.
+          The two frames decode a real update target during training &#8212; the PDMD target contains fewer artifacts.</figcaption>
       </figure>
     <div class="radarwrap reveal">
       <svg class="radar" id="radar" viewBox="0 0 560 480" role="img"

@@ -396,12 +396,11 @@ footer{border-top:1px solid var(--hair-soft); padding-block:30px 44px; color:var
    figure and centre the legend on the chart above it */
 .radarwrap{grid-template-columns:1fr; gap:10px; margin-top:-14px; justify-items:center}
 .radarwrap > div{width:100%}
-/* Two columns: lift the radar by three lines of the abstract beside it
-   (line-height 43.52px, so 131px). The boxes now overlap by ~24px, but the
-   chart's own viewBox carries ~46px of empty space above its first ink, so the
-   ink still clears the figure caption by ~22px and nothing is drawn over. */
+/* Keep the desktop chart below the full caption as its text wraps. */
 @media (min-width:981px){
-  .tldr-grid > .radarwrap{margin-top:-145px}
+  .tldr-grid{row-gap:24px}
+  .tldr-grid > .fig3{margin-bottom:0}
+  .tldr-grid > .radarwrap{margin-top:0}
 }
 
 .btn--ghost{height:46px; font-size:15px; align-self:flex-start}
