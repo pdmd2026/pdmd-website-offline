@@ -8,25 +8,25 @@
 <meta property="og:title" content="PDMD &#8212; Projected Distribution Matching Distillation">
 <meta property="og:description" content="Delete one direction from the DMD update and four-step distillation stops collapsing.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="posters/film.jpg?v=64">
+<meta property="og:image" content="posters/film.jpg?v=70">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='12'%20fill='%23050505'/%3E%3Cpath%20d='M32%2014%20V44%20M18%2044%20H46'%20stroke='%23FF6A2C'%20stroke-width='6'%20stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="site.css?v=64">
+<link rel="stylesheet" href="site.css?v=70">
 </head>
 <body>
 
 <div class="topbar" id="topbar">
   <a class="mark" href="#top">PDMD</a>
   <span class="chip">TL;DR</span>
-  <span class="strap"><b>A one-line change that projects the DMD update onto the subspace orthogonal to the
-    student&#8211;critic endpoint residual,</b> reducing training errors such as oversaturation and reduced
-    motion.</span>
+  <span class="strap"><b>PDMD suppresses the student&#8217;s training error by projecting out a ready-made error estimate.</b></span>
   <nav>
     <a href="#film">Meet PDMD</a>
     <a href="#tldr">TL;DR</a>
     <a href="#gallery">Gallery</a>
+    <a href="#nfe2" class="nav-nfe2">2 NFE</a>
     <a href="#bench" data-bench="h3">Benchmarks</a>
+    <a href="#us">User study</a>
   </nav>
 </div>
 
@@ -44,7 +44,7 @@
     <div class="strip rev" id="stripB"></div>
   </div></div>
   <div class="hero-foot">
-    <p class="tag"><b>Four-step</b> distillation for diffusion models. Every frame on this page is four network evaluations.</p>
+    <p class="tag"><b>Four-step</b> distillation for diffusion models. Every frame on this page is four network evaluations or fewer.</p>
     <p class="sndhint" id="sndHint" hidden><b>Click anywhere</b> to turn on sound &#8212;
       browsers block audio until a page has been clicked once.</p>
     <p class="cue">Scroll</p>
@@ -59,7 +59,7 @@
       <p class="h2sub">State-of-the-art step distillation</p>
     </div>
     <div class="player reveal" id="player">
-      <img class="ph" src="posters/film.jpg?v=64" alt="">
+      <img class="ph" src="posters/film.jpg?v=70" alt="">
       <div class="play"><span>&#9654;</span></div>
       <div class="runtime">1:13 &#183; sound on</div>
     </div>
@@ -74,12 +74,10 @@
     <div class="tldr-label reveal">TL;DR</div>
     <div class="tldr-grid">
     <div class="quote reveal">
-      <h1 class="title"><em>Projected</em> Distribution<br>Matching Distillation<br>for Diffusion Models</h1>
-      <p class="tldr">We introduce PDMD, Projected Distribution Matching Distillation, a one-line
-        modification that projects the DMD update onto the subspace <mark>orthogonal to the student&#8211;critic
-        endpoint residual</mark>. <span class="dim">That residual is an unbiased estimate of the critic&#39;s own
-        error, so deleting it removes the part of the update the critic got wrong. Nothing else changes: no
-        auxiliary loss, no discriminator, no second network, no extra model evaluation.</span></p>
+      <h1 class="title"><em>Projected</em> Distribution<br>Matching Distillation</h1>
+      <p class="tldr">PDMD suppresses the student&#8217;s training error by <mark>projecting out a ready-made
+        error estimate</mark>. <span class="dim">Nothing else changes: no
+        auxiliary loss, no additional network, no extra model pass.</span></p>
       <div class="oneline"><i># r = x0_critic - x0_student</i><b>d = d - (d * r).sum() / r.pow(2).sum() * r</b></div>
       <p class="names">
         Zimo Wang<sup>1,2</sup>, Junkun Yuan<sup>2</sup>, Angtian Wang<sup>2</sup>, Haotian Yang<sup>2</sup>,
@@ -134,11 +132,24 @@
   <div class="film" id="filmgrid"></div>
 </section>
 
+<!-- ============ 4b -- 2-NFE gallery ============ -->
+<section class="band" id="nfe2" style="padding-block:clamp(40px,6vw,80px)">
+  <div class="wrap hold">
+    <div class="head reveal">
+      <h2>Gallery &#183; 2 NFE</h2>
+      <p class="sub">MiniMax-H3-33B distilled with PDMD, down to two network evaluations. 1344&#215;768,
+        345 frames at 24 fps, seed 42.</p>
+    </div>
+  </div>
+  <div class="film film--7" id="nfe2grid"></div>
+</section>
+
 <!-- ============ 5 -- read more ============ -->
 <section class="band wrap" id="readmore">
   <div class="hold">
     <div class="rm-head reveal">
       <h2>Read more</h2>
+      <a class="btn btn--accent rm-cta" href="#/compare/h3">Check qualitative comparisons side by side &#8594;</a>
     </div>
 
     <!-- 5b -->
@@ -150,8 +161,6 @@
             <button class="sw" role="tab" data-b="h3" aria-selected="true">H3 &#183; VideoGen-Eval</button>
             <button class="sw" role="tab" data-b="wan" aria-selected="false">Wan2.1 &#183; VBench</button>
           </div>
-          <a class="btn btn--ghost btn--accent" href="#/compare/h3" style="margin-top:16px">Check qualitative
-            comparisons side by side &#8594;</a>
         </div>
       </div>
 
@@ -206,6 +215,35 @@
           DMD<sup class="dag">&#8224;</sup> and PDMD differ only by the projection.</p>
       </div>
     </div>
+
+    <!-- 5c -->
+    <div class="sect" id="us">
+      <div class="split reveal">
+        <div class="l"><span class="label">User study</span></div>
+        <div class="r">
+          <div class="switch" role="tablist" id="usSet">
+            <button class="sw" role="tab" data-s="h3" aria-selected="true">H3 &#183; VideoGen-Eval</button>
+            <button class="sw" role="tab" data-s="wan" aria-selected="false">Wan2.1 &#183; VBench</button>
+          </div>
+          <div>
+            <div class="us-ask">PDMD vs.</div>
+            <div class="us-picks" role="radiogroup" aria-label="Baseline" id="usPick"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="us-chart reveal">
+        <div class="us-legend">
+          <span><b class="us-w"></b>PDMD</span>
+          <span><b class="us-t"></b>Tie</span>
+          <span><b class="us-l"></b><span id="usLegB"></span></span>
+          <span class="us-nethd">Net (win &#8722; loss)</span>
+        </div>
+        <div id="usBars"></div>
+      </div>
+      <p class="tnote reveal"><span id="usNote"></span> Bars are shares of all judgments in percent;
+        hover a segment for the exact value. &#8224; marks our reimplementations.</p>
+    </div>
   </div>
 </section>
 
@@ -238,13 +276,14 @@
 <footer class="wrap">
   <div class="hold foot">
     <div>PDMD &#183; Projected Distribution Matching Distillation &#183; ByteDance and UC San Diego</div>
-    <div>All clips generated at 4 NFE.</div>
+    <div>All clips generated at 4 NFE, except the 2-NFE gallery.</div>
   </div>
 </footer>
 
-<script src="data.js?v=64"></script>
-<script src="site.js?v=64"></script>
-<script src="radar.js?v=64"></script>
+<script src="data.js?v=70"></script>
+<script src="site.js?v=70"></script>
+<script src="radar.js?v=70"></script>
+<script src="userstudy.js?v=70"></script>
 <script>
 (function () {
   "use strict";
@@ -329,7 +368,7 @@
   player.addEventListener("click", function () {
     if (player.classList.contains("on")) return;
     var v = document.createElement("video");
-    v.src = "film.mp4?v=64"; v.controls = true; v.autoplay = true; v.playsInline = true; v.preload = "auto";
+    v.src = "film.mp4?v=70"; v.controls = true; v.autoplay = true; v.playsInline = true; v.preload = "auto";
     player.appendChild(v);
     player.classList.add("on");
     v.play().catch(function () {});
@@ -390,6 +429,12 @@
   /* ---- 4. gallery ---- */
   var grid = document.getElementById("filmgrid");
   SHOWN.forEach(function (it, i) { grid.appendChild(UI.cell(it, i % 5 === 0 ? "wide" : "")); });
+
+  /* ---- 4b. 2-NFE gallery ---- */
+  var grid2 = document.getElementById("nfe2grid");
+  (D.nfe2 || []).forEach(function (it) {
+    grid2.appendChild(UI.cell(it, "", "MiniMax-H3-33B distilled with PDMD, 2 NFE -- " + it.kind));
+  });
 
   /* ---- 5. comparison grids (their own page) ----
      A row only fetches metadata once it is near the viewport -- that paints a

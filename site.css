@@ -269,6 +269,16 @@ footer{border-top:1px solid var(--hair-soft); padding-block:30px 44px; color:var
   .reel + .reel{display:none}
 }
 
+/* the 2-NFE gallery: seven across, three rows; three across below 980px (seven rows) */
+.film.film--7{grid-template-columns:repeat(7,minmax(0,1fr))}
+.film--7 .cell .cap{left:10px; right:10px; bottom:8px; font-size:13px; line-height:1.3}
+.film--7 .cell .cap em{font-size:10px}
+@media (max-width:980px){.film.film--7{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){
+  .film--7 .cell .cap{display:none}
+  .topbar .nav-nfe2{display:none}
+}
+
 /* ---------------- 3. the film ---------------- */
 /* 80% of the column, centred -- the film is a 1280x720 master, so a narrower
    box also means less upscaling on a wide display */
@@ -298,6 +308,13 @@ footer{border-top:1px solid var(--hair-soft); padding-block:30px 44px; color:var
 /* ---------------- 5. read more ---------------- */
 .rm-head{display:grid; gap:14px; margin-bottom:clamp(30px,5vw,64px)}
 .rm-head .sub{max-width:60ch}
+/* the comparison-page link sits on the heading's baseline, right-aligned */
+.rm-head{grid-template-columns:1fr auto; align-items:end; column-gap:24px}
+.rm-head .rm-cta{height:60px; padding:0 26px; font-size:18px}
+@media (max-width:760px){
+  .rm-head{grid-template-columns:1fr}
+  .rm-head .rm-cta{justify-self:start; height:52px; font-size:16px; padding:0 18px}
+}
 .sect{border-top:1px solid var(--hair-soft); padding-top:clamp(26px,3.6vw,46px); margin-top:clamp(40px,6vw,82px)}
 .sect:first-of-type{margin-top:0}
 .split{display:grid; grid-template-columns:minmax(150px,.7fr) 1.3fr; gap:0}
@@ -495,4 +512,50 @@ footer{border-top:1px solid var(--hair-soft); padding-block:30px 44px; color:var
 /* a blinking box is exactly what this setting exists to stop */
 @media (prefers-reduced-motion:reduce){
   .sndhint{animation:none; opacity:1}
+}
+
+/* ---------------- user study: PDMD vs. one chosen baseline ---------------- */
+.us-ask{font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:10px}
+.us-picks{display:flex; flex-wrap:wrap; gap:8px}
+.us-opp{appearance:none; font:inherit; font-size:14px; cursor:pointer; color:var(--ink-2);
+        background:none; border:1px solid var(--hair); border-radius:999px; padding:7px 15px;
+        transition:color .2s,border-color .2s,background .2s}
+.us-opp em{font-style:normal; font-size:12px; color:var(--muted)}
+.us-opp.is-base{color:var(--muted)}
+.us-opp:hover{color:var(--ink); border-color:var(--ink-2)}
+.us-opp[aria-checked="true"]{color:#050505; background:var(--ink); border-color:var(--ink)}
+.us-opp[aria-checked="true"] em{color:var(--bone-muted)}
+
+.us-chart{margin-top:clamp(28px,3.6vw,48px)}
+.us-legend{display:flex; flex-wrap:wrap; align-items:center; gap:10px 26px; font-size:14px;
+           color:var(--ink-2); margin-bottom:22px}
+.us-legend > span{display:inline-flex; align-items:center; gap:9px}
+.us-legend b{width:14px; height:14px; border-radius:3px; flex:none}
+.us-legend em{font-style:normal; color:var(--muted); font-size:12.5px}
+.us-legend .us-nethd{margin-left:auto; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+
+.us-row{display:grid; grid-template-columns:minmax(120px,190px) 1fr 76px; align-items:center;
+        gap:0 22px; padding-block:9px}
+.us-dim{font-size:15.5px; color:var(--ink)}
+.us-bar{display:flex; height:46px; border-radius:6px; overflow:hidden; gap:2px}
+.us-seg{position:relative; display:flex; align-items:center; justify-content:center; min-width:0;
+        font-size:14px; font-variant-numeric:tabular-nums; transition:flex-basis .7s cubic-bezier(.22,.7,.3,1)}
+.us-seg i{font-style:normal; white-space:nowrap}
+.us-w{background:var(--signal); color:#050505; font-weight:600}
+.us-t{background:rgba(255,255,255,.1); color:var(--ink-2)}
+.us-l{background:#6E6B64; color:var(--ink)}
+.us-net{text-align:right; font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-size:15px;
+        font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.us-net.pos{color:var(--signal)}
+.us-net.neg{color:var(--muted)}
+/* bars grow from the left each time the pairing changes */
+@keyframes usgrow{from{clip-path:inset(0 100% 0 0)} to{clip-path:inset(0 0 0 0)}}
+.us-chart .go .us-bar{animation:usgrow .75s cubic-bezier(.22,.7,.3,1) both}
+@media (prefers-reduced-motion:reduce){.us-chart .go .us-bar{animation:none}}
+@media (max-width:640px){
+  .us-row{grid-template-columns:1fr auto; gap:8px 12px}
+  .us-dim{grid-column:1; grid-row:1}
+  .us-net{grid-column:2; grid-row:1}
+  .us-bar{grid-column:1 / -1; height:40px}
+  .us-legend .us-nethd{display:none}
 }

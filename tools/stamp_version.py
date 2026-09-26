@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-ASSETS = ["site.css", "site.js", "radar.js", "data.js", "film.mp4", "posters/film.jpg"]
+ASSETS = ["site.css", "site.js", "radar.js", "userstudy.js", "data.js", "film.mp4", "posters/film.jpg"]
 
 
 def main() -> int:

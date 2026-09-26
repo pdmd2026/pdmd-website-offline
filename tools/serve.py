@@ -109,14 +109,28 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
+# --lan also listens on the local network, so a phone on the same Wi-Fi can open it
+LAN = "--lan" in sys.argv
+args = [a for a in sys.argv[1:] if a != "--lan"]
+port = int(args[0]) if args else 8000
+
+
+def lan_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("10.255.255.255", 1))          # no packet is sent; picks the outbound interface
+        return s.getsockname()[0]
+    except OSError:
+        return None
+    finally:
+        s.close()
 
 class V6Server(ThreadingHTTPServer):
     address_family = socket.AF_INET6
 
 
 try:
-    srv = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    srv = ThreadingHTTPServer(("0.0.0.0" if LAN else "127.0.0.1", port), Handler)
 except OSError as e:
     if e.errno != 48:
         raise
@@ -139,6 +153,9 @@ except OSError:
     pass                                  # no IPv6 loopback here; IPv4 is enough
 
 print(f"http://localhost:{port}  (ctrl-c to stop)")
+if LAN:
+    ip = lan_ip()
+    print(f"on your phone (same Wi-Fi): http://{ip or '<this-mac-ip>'}:{port}")
 try:
     srv.serve_forever()
 except KeyboardInterrupt:

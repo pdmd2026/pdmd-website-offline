@@ -239,7 +239,7 @@
     return { enter: enter, leave: leave };
   }
 
-  function cell(it) {
+  function cell(it, _wide, sub) {
     var b = document.createElement("button");
     b.type = "button";
     b.className = "cell";
@@ -255,7 +255,8 @@
     b.appendChild(ph); b.appendChild(veil); b.appendChild(cap);
     hoverPlay(b, it.src, function (on) { b.classList.toggle("playing", on); });
     b.addEventListener("click", function () {
-      openLightbox({ title: it.title, sub: "MiniMax-H3-33B distilled with PDMD, 4 NFE -- " + it.kind, prompt: it.prompt, src: it.src });
+      openLightbox({ title: it.title, sub: sub || "MiniMax-H3-33B distilled with PDMD, 4 NFE -- " + it.kind,
+                     prompt: it.prompt, src: it.src });
     });
     return b;
   }
